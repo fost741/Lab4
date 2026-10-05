@@ -1,5 +1,4 @@
-﻿
-public class Instruments
+﻿public class Instruments
 {
     private static int validCount = 0;
     private static int totalCount = 0;
@@ -213,6 +212,49 @@ public class Instruments
         else if (roomArea < 50) recommended = 50;
         else recommended = 90;
         return Math.Min(recommended, maxAllowedVol);
+    }
+
+    public static Instruments Parse (string input) //parse метод для створення об'єкту інструменту з рядка
+    {
+        if(string.IsNullOrEmpty(input)) throw new ArgumentException("Input string cannot be null or empty.");
+        string[] parts = input.Split(',');
+        if (parts.Length < 6) throw new ArgumentException("Invalid input format. Missing value. Expected format: Name, Family, Brand, IsElectric, KeyCount, StringCount\n");
+        string name = parts[0].Trim();
+
+        if (!Enum.TryParse(parts[1].Trim(), true, out Family family))
+            throw new FormatException($"Invalid family value: '{parts[1]}'. Allowed values: Strings, Woodwinds, Brass, Percussion, Keyboard.");
+
+        if (!Enum.TryParse(parts[2].Trim(), true, out Brand brand))
+            throw new FormatException($"Invalid brand value: '{parts[2]}'. Allowed values: Yamaha, Gibson, Pearl, Roland.");
+
+        if (!bool.TryParse(parts[3].Trim(), out bool isElectric))
+            throw new FormatException($"Invalid boolean value for IsElectric: '{parts[3]}'. Expected 'true' or 'false'.");
+
+        if (!int.TryParse(parts[4].Trim(), out int keyCount))
+            throw new FormatException($"Invalid integer value for KeyCount: '{parts[4]}'.");
+
+        if (!int.TryParse(parts[5].Trim(), out int stringCount))
+            throw new FormatException($"Invalid integer value for StringCount: '{parts[5]}'.");
+        return new Instruments(name, family, brand, isElectric, keyCount, stringCount);
+    }
+
+    public static bool TryParse(string input, out Instruments instrument) //tryparse метод для створення об'єкту 
+    {
+        instrument = null;
+        try
+        {
+            instrument = Parse(input);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public override string ToString() //ToString метод для виведення інформації про інструмент 
+    {
+        return $"{name}, {family}, {brand}, {isElectric}, {keyCount}, {stringCount}";
     }
 
     public string Tune() //настроювання інструменту
