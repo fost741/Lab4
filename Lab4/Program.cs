@@ -445,7 +445,7 @@ namespace Lab_2
                     if (double.TryParse(Console.ReadLine(), out double area) && area > 0)
                     {
                         int recommendedVolume = Instruments.CalcRecommendVolume(area);
-                        Console.WriteLine($"Recommended volume for room area {area} m² is {recommendedVolume}%.");
+                        Console.WriteLine($"Recommended volume for room area {area} m**2 is {recommendedVolume}%.");
                     }
                     else
                     {

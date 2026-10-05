@@ -142,9 +142,9 @@
         get { return currentVolume; }
         set
         {
-            if (value < 0 || value > 100)
-                throw new ArgumentException("Volume should be between 0 and 100");
-            currentVolume = value;
+            if (value < 0)
+                throw new ArgumentException($"Volume cannot be negative");
+            currentVolume = Math.Min(value, maxAllowedVol);
         }
     }
 
