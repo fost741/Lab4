@@ -19,8 +19,9 @@ namespace Lab_2
                                     "3. Search for object\n" +
                                     "4. Show behaviour\n" +
                                     "5. Delete object\n" +
+                                    "6. Show static methods\n" +
                                     "0. Exit");
-                int choice = Menu("Choose option: ", 0, 5);
+                int choice = Menu("Choose option: ", 0, 6);
                 switch (choice)
                 {
                     case 1: AddObj(instruments, maxArg); break;
@@ -28,6 +29,7 @@ namespace Lab_2
                     case 3: Search(instruments); break;
                     case 4: ShowBehaviour(instruments); break;
                     case 5: DeleteObj(instruments); break;
+                    case 6: break;
                     case 0:
                         Console.WriteLine("Program is ended. Goodbye!");
                         return;
@@ -56,8 +58,9 @@ namespace Lab_2
 
             Console.WriteLine("\nAdding options" +
                                 "\n1. Add manually\n" +
-                                "2. Add randomly\n");
-            int mode = Menu("Choose option: ", 1, 2);
+                                "2. Add randomly\n" + 
+                                "3. Add in one string foemat\n");
+            int mode = Menu("Choose option: ", 1, 3);
 
             Instruments inst = null;
             if (mode == 1)
@@ -146,7 +149,7 @@ namespace Lab_2
                 Console.WriteLine(inst.Tune());
                 inst.CurrentVolume = inst.IsElectric ? Menu("Enter start volume (0-100%): ", 0, 100) : 0;
             }
-            else
+            else if (mode == 2)
             {
                 Random rand = new Random();
                 string[] names = { "guitar", "violin", "piano", "keyboard", "drums", "ukulele", "flute", "clarinet", "trumpet" };
@@ -188,6 +191,28 @@ namespace Lab_2
                 inst.CurrentVolume = inst.IsElectric ? 50 : 0;
                 Console.WriteLine("Object has been generated successfuly! ");
             }
+            else if (mode == 3)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Enter instrument data in one string format (name, family, brand, isElectric, keyCount, stringCount): ");
+                    Console.WriteLine("Example: guitar, Strings, Yamaha, false, 0, 6");
+                    string instData = Console.ReadLine();
+                    if (Instruments.TryParse(instData, out inst))
+                    {
+                        Console.WriteLine("Object has been generated successfuly! ");
+                        if(inst.IsElectric)
+                        {
+                            inst.CurrentVolume = Menu("Enter start volume (0-100%): ", 0, 100);
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input format. Please try again.");
+                    }
+                }
+            }
 
             list.Add(inst);
             Console.WriteLine($"Instrument {inst.Name} is added ({list.Count} / {max})");
@@ -200,15 +225,16 @@ namespace Lab_2
                 Console.WriteLine("\nList is empty!"); return;
             }
 
-            Console.WriteLine(new string('-', 98));
+            Console.WriteLine($"Current valid instruments count: {Instruments.ValidCount}");
+            Console.WriteLine(new string('-', 107));
             Console.WriteLine($"| {"№",-3} | {"Name",-15} | {"Family",-10} | {"Brand",-8} | {"Electric",-8} | {"Keys",-5} | {"Strings",-7} | {"Tuned",-6} | {"Vol",-4} | {"Sound Type",-8} |");
-            Console.WriteLine(new string('-', 98));
+            Console.WriteLine(new string('-', 107));
 
             for (int i = 0; i < list.Count; i++)
             {
                 PrintRow(i + 1, list[i]);
             }
-            Console.WriteLine(new string('-', 98));
+            Console.WriteLine(new string('-', 107));
         }
 
         static void PrintRow(int num, Instruments inst)

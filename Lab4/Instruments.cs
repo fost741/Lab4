@@ -33,6 +33,7 @@
         totalCount++;
         RegCode = $"REG-{totalCount:D2}";
         Console.WriteLine($"(Constructor (by default) was called for {RegCode})");
+        IncrementObjCount();
     }
     public string RegCode { get; private set; } = "REG_00"; 
 
@@ -50,8 +51,6 @@
         KeyCount = keyCount;
         StringCount = stringCount;
         Console.WriteLine($"(Constructor with 6 parameters was called for {RegCode})");
-
-        IncrementObjCount();
     }
 
     public static void IncrementObjCount()
@@ -220,9 +219,24 @@
         string[] parts = input.Split(',');
         if (parts.Length < 6) throw new ArgumentException("Invalid input format. Missing value. Expected format: Name, Family, Brand, IsElectric, KeyCount, StringCount\n");
         string name = parts[0].Trim();
+        string lowName = name.ToLower();
 
         if (!Enum.TryParse(parts[1].Trim(), true, out Family family))
             throw new FormatException($"Invalid family value: '{parts[1]}'. Allowed values: Strings, Woodwinds, Brass, Percussion, Keyboard.");
+        if ((lowName.Contains("guitar") || lowName.Contains("violin") || lowName.Contains("ukulele")) && family != Family.Strings)
+            throw new ArgumentException($"Instrument '{name}' must belong to the STRINGS family.");
+
+        if ((lowName.Contains("piano") || lowName.Contains("keyboard")) && family != Family.Keyboard)
+            throw new ArgumentException($"Instrument '{name}' must belong to the KEYBOARD family.");
+
+        if ((lowName.Contains("flute") || lowName.Contains("clarinet")) && family != Family.Woodwinds)
+            throw new ArgumentException($"Instrument '{name}' must belong to the WOODWINDS family.");
+
+        if (lowName.Contains("trumpet") && family != Family.Brass)
+            throw new ArgumentException($"Instrument '{name}' must belong to the BRASS family.");
+
+        if (lowName.Contains("drum") && family != Family.Percussion)
+            throw new ArgumentException($"Instrument '{name}' must belong to the PERCUSSION family.");
 
         if (!Enum.TryParse(parts[2].Trim(), true, out Brand brand))
             throw new FormatException($"Invalid brand value: '{parts[2]}'. Allowed values: Yamaha, Gibson, Pearl, Roland.");
@@ -230,11 +244,40 @@
         if (!bool.TryParse(parts[3].Trim(), out bool isElectric))
             throw new FormatException($"Invalid boolean value for IsElectric: '{parts[3]}'. Expected 'true' or 'false'.");
 
-        if (!int.TryParse(parts[4].Trim(), out int keyCount))
-            throw new FormatException($"Invalid integer value for KeyCount: '{parts[4]}'.");
+        if(!int.TryParse(parts[4].Trim(), out int keyCount) || keyCount < 0)
+        throw new FormatException($"Invalid integer value for KeyCount: '{parts[4]}'");
 
-        if (!int.TryParse(parts[5].Trim(), out int stringCount))
+        if (family == Family.Keyboard)
+        {
+            if (!isElectric && keyCount != 88)
+                throw new ArgumentException($"Acoustic keyboard instruments ({name}) must have exactly 88 keys.");
+
+            if (isElectric && keyCount != 61 && keyCount != 76 && keyCount != 88)
+                throw new ArgumentException($"Electric keyboard instruments must have 61, 76, or 88 keys. Entered: {keyCount}");
+        }
+        else if (keyCount != 0)
+        {
+            throw new ArgumentException($"Non-keyboard instruments must have 0 keys. Entered: {keyCount}");
+        }
+
+        if (!int.TryParse(parts[5].Trim(), out int stringCount) || stringCount < 0)
             throw new FormatException($"Invalid integer value for StringCount: '{parts[5]}'.");
+
+        if (family == Family.Strings)
+        {
+            if ((lowName.Contains("ukulele") || lowName.Contains("violin")) && stringCount != 4)
+                throw new ArgumentException($"Instrument '{name}' must have exactly 4 strings. Entered: {stringCount}");
+
+            if (lowName.Contains("guitar") && stringCount != 6 && stringCount != 7 && stringCount != 12)
+                throw new ArgumentException($"Guitar must have 6, 7, or 12 strings. Entered: {stringCount}");
+
+            if (stringCount < 4)
+                throw new ArgumentException($"String instruments must have at least 4 strings. Entered: {stringCount}");
+        }
+        else if (stringCount != 0)
+        {
+            throw new ArgumentException($"Non-string instruments must have 0 strings. Entered: {stringCount}");
+        }
         return new Instruments(name, family, brand, isElectric, keyCount, stringCount);
     }
 
