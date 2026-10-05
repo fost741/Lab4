@@ -1,7 +1,8 @@
 ﻿
 public class Instruments
 {
-    private static int count = 0;
+    private static int validCount = 0;
+    private static int totalCount = 0;
     private static int maxAllowedVol = 100;
     private string name;
     private Brand brand;
@@ -13,15 +14,28 @@ public class Instruments
     private bool isTuned;
     private int currentVolume;
 
-
+    public static int ValidCount //static властивість для підрахунку кількості створених інструментів
+    {
+        get { return validCount; }
+    }
+    public static int MaxAllowedVolume //static властивість для обмеження максимальної гучності
+    {
+        get { return maxAllowedVol; }
+        set
+        {
+            if (value < 0 || value > 100)
+                throw new ArgumentOutOfRangeException("Max volume must be between 0 and 100.");
+            maxAllowedVol = value;
+        }
+    }
 
     public Instruments()
     {
-        count++;
-        RegCode = $"REG-{count:D2}";
+        totalCount++;
+        RegCode = $"REG-{totalCount:D2}";
         Console.WriteLine($"(Constructor (by default) was called for {RegCode})");
     }
-    public string RegCode { get; private set; } = "REG_00"; //автовластивістьб індивідуальний код інструменту
+    public string RegCode { get; private set; } = "REG_00"; 
 
     public Instruments(string name, Family family, Brand brand) : this()
     {
@@ -37,6 +51,13 @@ public class Instruments
         KeyCount = keyCount;
         StringCount = stringCount;
         Console.WriteLine($"(Constructor with 6 parameters was called for {RegCode})");
+
+        IncrementObjCount();
+    }
+
+    public static void IncrementObjCount()
+    {
+        validCount++;
     }
 
     public string Name
@@ -108,7 +129,7 @@ public class Instruments
         }
     }
 
-    //властивість з різним рівнем доступу для set та get
+  
     public bool IsTuned
     {
         get { return isTuned; }
@@ -129,7 +150,6 @@ public class Instruments
         }
     }
 
-    //обчислювальна властивість
     public string SoundType
     {
         get
@@ -140,7 +160,6 @@ public class Instruments
         }
     }
 
-    //приватний метод для приховування деталей реалізації паблік методів
     private bool CanTune(out string message)
     {
         if (isElectric && !isConnected)
@@ -185,6 +204,17 @@ public class Instruments
     }
 
     //загальнодоступні методи
+
+    public static int CalcRecommendVolume(double roomArea) //static метод для розрахунку рекомендованої гучності інструменту в залежності від площі приміщення
+    {
+        if (roomArea <= 0) throw new ArgumentException("Room area must be more than 0.");
+        int recommended;
+        if (roomArea < 20) recommended = 30;
+        else if (roomArea < 50) recommended = 50;
+        else recommended = 90;
+        return Math.Min(recommended, maxAllowedVol);
+    }
+
     public string Tune() //настроювання інструменту
     {
         if (!CanTune(out string message))
