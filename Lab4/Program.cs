@@ -29,7 +29,7 @@ namespace Lab_2
                     case 3: Search(instruments); break;
                     case 4: ShowBehaviour(instruments); break;
                     case 5: DeleteObj(instruments); break;
-                    case 6: break;
+                    case 6: ShowStaticMethods(); break;
                     case 0:
                         Console.WriteLine("Program is ended. Goodbye!");
                         return;
@@ -424,6 +424,37 @@ namespace Lab_2
             Instruments instToDel = list[index - 1];
             list.RemoveAt(index - 1);
             Console.WriteLine($"Instrument {instToDel.Name} has been deleted.");
+        }
+
+        static void ShowStaticMethods()
+        {
+            Console.WriteLine("\n------STATIC METHODS MENU------" +
+                                "\n1. Change max allowed volume\n" +
+                                "2. Get recommended volume by room area\n" +
+                                "0. Back to main menu");
+            int choice = Menu("Choose option: ", 0, 2);
+            switch (choice)
+            {
+                case 1:
+                    int newMaxVolume = Menu("Enter new max allowed volume (0-100%): ", 0, 100);
+                    Instruments.MaxAllowedVolume = newMaxVolume;
+                    Console.WriteLine($"Max allowed volume changed to {newMaxVolume}%.");
+                    break;
+                case 2:
+                    Console.WriteLine("Enter room area in square meters: ");
+                    if (double.TryParse(Console.ReadLine(), out double area) && area > 0)
+                    {
+                        int recommendedVolume = Instruments.CalcRecommendVolume(area);
+                        Console.WriteLine($"Recommended volume for room area {area} m² is {recommendedVolume}%.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input. Room area must be a positive number.");
+                    }
+                    break;
+                case 0:
+                    return;
+            }
         }
 
         static int StringCount(string name, Family family)
