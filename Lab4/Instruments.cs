@@ -28,34 +28,40 @@
         }
     }
 
-    public Instruments()
+    private void RegisterObj()
     {
         totalCount++;
+        validCount++;
         RegCode = $"REG-{totalCount:D2}";
-        Console.WriteLine($"(Constructor (by default) was called for {RegCode})");
-        IncrementObjCount();
     }
+
+    public Instruments() //default конструктор
+    {
+        RegisterObj();
+        Console.WriteLine($"(Default constructor was called for {RegCode})");
+    }
+
     public string RegCode { get; private set; } = "REG_00"; 
 
-    public Instruments(string name, Family family, Brand brand) : this()
+    private Instruments(string name, Family family, Brand brand, bool isInternal) //validation x set
     {
         Name = name;
         Family = family;
         Brand = brand;
+    }
+    public Instruments(string name, Family family, Brand brand) : this(name, family, brand, true) //delegate validation, registration with 3 parameters
+    {
+        RegisterObj();
         Console.WriteLine($"(Constructor with 3 parameters was called for {RegCode})");
     }
 
-    public Instruments(string name, Family family, Brand brand, bool isElectric, int keyCount, int stringCount) : this(name, family, brand)
+    public Instruments(string name, Family family, Brand brand, bool isElectric, int keyCount, int stringCount) : this(name, family, brand, true)
     {
         IsElectric = isElectric;
         KeyCount = keyCount;
         StringCount = stringCount;
+        RegisterObj();
         Console.WriteLine($"(Constructor with 6 parameters was called for {RegCode})");
-    }
-
-    public static void IncrementObjCount()
-    {
-        validCount++;
     }
 
     public string Name
