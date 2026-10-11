@@ -198,18 +198,18 @@ namespace Lab_2
                     Console.WriteLine("Enter instrument data in one string format (name, family, brand, isElectric, keyCount, stringCount): ");
                     Console.WriteLine("Example: guitar, Strings, Yamaha, false, 0, 6");
                     string instData = Console.ReadLine();
-                    if (Instruments.TryParse(instData, out inst))
+                    try
                     {
+                        inst = Instruments.Parse(instData);
                         Console.WriteLine("Object has been generated successfuly! ");
-                        if(inst.IsElectric)
-                        {
-                            inst.CurrentVolume = Menu("Enter start volume (0-100%): ", 0, 100);
-                        }
-                        break;
-                    }
-                    else
+                            if (inst.IsElectric)
+                            {
+                                inst.CurrentVolume = Menu("Enter start volume (0-100%): ", 0, 100);
+                            }
+                            break;
+                    } catch (Exception ex)
                     {
-                        Console.WriteLine("Invalid input format. Please try again.");
+                        Console.WriteLine($"Error: {ex.Message}.  Please try again.");
                     }
                 }
             }

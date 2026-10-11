@@ -295,7 +295,7 @@
             instrument = Parse(input);
             return true;
         }
-        catch
+        catch (Exception ex)
         {
             return false;
         }
